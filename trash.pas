@@ -19,39 +19,71 @@ end;
 procedure paint_dragon(x, y: integer; hide: boolean = false);
 var
     filler: char = '0';
-    wing: char = '-';
+    wing: char = '*';
+    eye: char = '@';
+    leg: char = '_';
+    paw: char = '"';
+    mouth: char = '=';
 begin
     if hide then begin
         filler := ' ';
-        wing := ' '
+        wing := ' ';
+        eye := ' ';
+        leg := ' ';
+        paw := ' ';
+        mouth := ' ';
     end;
-    { Tail }
-    TextColor(LightCyan);
-    GotoXY(x-1, y-2);
-    write(filler);
-    GotoXY(x, y-1);
-    write(filler);
     { Body }
-    GotoXY(x-2, y);
-    write(wing + filler);
+    TextColor(LightCyan);
+    GotoXY(x, y-5); write(filler + filler);
+    GotoXY(x-1, y-4); write(filler);
+    GotoXY(x, y-3); write(filler);
+    GotoXY(x-1, y-2); write(filler + filler + filler);
+    GotoXY(x-1, y-1); write(filler + filler + filler);
+    GotoXY(x-2, y); write(filler + filler + filler + filler + filler);
+    GotoXY(x, y+1); write(filler);
+    GotoXY(x-1, y+2); write(filler + filler + filler);
+    { Wings }
     TextColor(White);
-    write(filler);
+    GotoXY(x-4, y-1); write(wing + wing);
+    GotoXY(x+3, y-1); write(wing + wing);
+    GotoXY(x-3, y); write(wing);
+    GotoXY(x+3, y); write(wing);
+    { Legs }
+    TextColor(LightGray);
+    GotoXY(x-2, y-2); write(leg);
+    GotoXY(x+2, y-2); write(leg);
+    GotoXY(x-2, y-1); write(paw);
+    GotoXY(x+2, y-1); write(paw);
+    GotoXY(x-1, y+1); write(leg);
+    GotoXY(x+1, y+1); write(leg);
+    GotoXY(x-2, y+2); write(paw);
+    GotoXY(x+2, y+2); write(paw);
+    { Head }
+    TextColor(LightRed);
+    GotoXY(x-1, y+3); write(eye + ' ' + eye);
     TextColor(LightCyan);
-    write(filler + wing);
-    { Neck & Head }
-    GotoXY(x-1, y+1);
-    TextColor(LightCyan);
-    write(filler);
-    TextColor(White);
-    write(filler);
-    TextColor(LightCyan);
-    write(filler);
-    GotoXY(x, y+2);
-    write(filler);
+    GotoXY(x, y+3); write(wing);
+    GotoXY(x, y+4); write(mouth);
+    TextColor(LightGray);
 end;
 
+procedure Menu();
+begin
+
+end;
+
+procedure Game();
+begin
+    
+end;
+
+
 type
-    point = array [1..2] of integer; {(x, y)}
+    point = record
+        x: integer;
+        y: integer;
+    end;
 const
     { Key codes }
     Esc = 27;
@@ -66,13 +98,13 @@ var
     hide: boolean = true;
     key: integer;
 begin
-    Center[1] := ScreenWidth div 2;
-    Center[2] := ScreenHeight div 2;
+    Center.x := ScreenWidth div 2;
+    Center.y := ScreenHeight div 2;
     clrscr;
 
     { Paint the dragon at center }
     Trash := Center;
-    paint_dragon(Trash[1], Trash[2]);
+    paint_dragon(Trash.x, Trash.y);
 
     GotoXY(1, ScreenHeight);
     write('Press Esc to exit...');
