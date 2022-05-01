@@ -44,6 +44,8 @@ begin
     { Paint the dragon at center }
     Trash := Center;
     paint_dragon(Trash.x, Trash.y);
+    Delay(2000);
+    paint_dragon(Trash.x, Trash.y, hide);
 end;
 
 procedure Info(Center: point);
@@ -59,12 +61,13 @@ end;
 
 procedure paint_buttons(sel_b, pl_b, in_b, ex_b: button);
 begin
-    GotoXY(1, pl_b.loc);
-    write(pl_b.name + #10 + in_b.name + #10 + ex_b.name);
-    GotoXY(1, sel_b.loc);
+    GotoXY((103 - 8) div 2, pl_b.loc); write(pl_b.name + #10);
+    GotoXY((103 - 8) div 2, in_b.loc); write(in_b.name);
+    GotoXY((103 - 8) div 2, ex_b.loc); write(ex_b.name);
+    GotoXY((103 - 8) div 2, sel_b.loc);
     TextBackground(Cyan); TextColor(Black);
     write(sel_b.name);
-    GotoXY(1, WhereY);
+    GotoXY((103 - 8) div 2, WhereY);
     TextBackground(Black); TextColor(LightGray);
 end;
 
@@ -99,10 +102,11 @@ var
     key: integer;
     play_b, info_b, exit_b, selected_b: button;
 begin
-    play_b.name := '   ~PLAY~   '; play_b.loc := Center.y-1;
-    info_b.name := '   ?INFO?   '; info_b.loc := Center.y;
-    exit_b.name := '   *EXIT*   '; exit_b.loc := Center.y+1;
+    play_b.name := '   ~PLAY~   '; play_b.loc := 33;
+    info_b.name := '   ?INFO?   '; info_b.loc := 34;
+    exit_b.name := '   *EXIT*   '; exit_b.loc := 35;
     selected_b := play_b;
+    paint_image();
     { Let user choose a button }
     repeat
         paint_buttons(selected_b, play_b, info_b, exit_b);
