@@ -12,11 +12,11 @@ const
     ImageCol = 11;
     { Dragon }
     BodyCol = 11;
-    EyeCol = 14;
+    EyeCol = 12;
     LegCol = 7;
     WingCol = 15;
     FlameCol1 = 12;
-    FlameCol2 = 6;
+    FlameCol2 = 15;
     { Bishop }
 
 implementation
