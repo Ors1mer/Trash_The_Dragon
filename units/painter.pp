@@ -6,6 +6,7 @@ procedure paint(x, y: integer; data: string);
 procedure paint_image();
 procedure paint_dragon(x, y, direction: integer; hide: boolean = false);
 procedure paint_wave(x, y, d, wave: integer);
+procedure paint_bishop(x, y, direction: integer; hide: boolean = false);
 
 implementation
 uses crt, constants, colorscheme, SysUtils;
@@ -262,5 +263,57 @@ begin
 end;
 
 { --- Bishop ---}
+type
+    BishopParts = array[1..9] of char;
+
+procedure paint_bishop_body(x, y: integer; part: char); forward;
+procedure paint_bishop_cloak(x, y, s: integer; parts: BishopParts); forward;
+procedure paint_bishop(x, y, direction: integer; hide: boolean = false);
+var
+    parts: BishopParts = ('*', '0', '_', ')', '\', '/', '-', '&', '^');
+    s: integer = 1; { sign }
+    i: integer;
+begin
+    if direction = Right then
+        s := -s;
+    if hide then begin { Change all to spaces }
+        for i := 1 to 9 do
+            parts[i] := ' ';
+    end;
+    paint_bishop_body(x, y, parts[1]);
+    paint_bishop_cloak(x, y, s, parts);
+    { Eyes & Knife }
+    TextColor(BishopEyeCol or Blink);
+    paint(x-2*s, y-1, parts[2]);
+    paint(x-s, y-1, parts[2]);
+    TextColor(KnifeCol1);
+    paint(x-2*s, y+1, parts[8]);
+    TextColor(KnifeCol2);
+    paint(x-3*s, y+1, parts[7]);
+    TextColor(DefaultCol);
+end;
+
+procedure paint_bishop_body(x, y: integer; part: char);
+begin
+    TextColor(BishopBodyCol);
+    paint(x, y-1, part);
+    paint(x-1, y, part+part+part);
+    paint(x-1, y+1, part+part+part);
+    paint(x-1, y+2, part);
+    paint(x+1, y+2, part);
+end;
+
+procedure paint_bishop_cloak(x, y, s: integer; parts: BishopParts);
+begin
+    TextColor(CloakCol);
+    paint(x-2*s, y-2, parts[3]);
+    paint(x-s, y-2, parts[3]);
+    paint(x+s, y-1, parts[4]);
+    paint(x+2*s, y, parts[5]);
+    paint(x+2*s, y+1, parts[5]);
+    paint(x-2*s, y+2, parts[6]);
+    paint(x, y+2, parts[9]);
+    paint(x+2*s, y+2, parts[6]);
+end;
 
 end.

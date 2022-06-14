@@ -109,6 +109,8 @@ begin
     paint_dragon(Trash.x, Trash.y, direction);
     repeat
         GetKey(key);
+        paint_bishop(20, 10, Right);
+        paint_bishop(20, 20, Left);
         if key = Space then
             flamethrower(Trash.x, Trash.y, direction)
         else if (key = Up) or (key = Down) or (key = Right) or (key = Left) then

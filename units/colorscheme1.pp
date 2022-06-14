@@ -18,6 +18,11 @@ const
     FlameCol1 = 12;
     FlameCol2 = 15;
     { Bishop }
+    BishopBodyCol = 5;
+    CloakCol = 7;
+    BishopEyeCol = 12;
+    KnifeCol1 = 8;
+    KnifeCol2 = 15;
 
 implementation
 
