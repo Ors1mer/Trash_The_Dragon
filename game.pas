@@ -1,4 +1,4 @@
-program Trash_Game; {program.pas}
+program Trash_Game; {game.pas}
 uses crt, constants, colorscheme, painter;
 
 type
@@ -94,9 +94,8 @@ begin
     end;
 end;
 
-procedure flamethrower(x, y, direction: integer); forward;
+procedure flamethrower(x, y, d: integer); forward;
 procedure step(var key, direction, x, y: integer); forward;
-
 procedure Play(Center: point);
 var
     Trash: point; { Dragon's location }
@@ -120,19 +119,21 @@ begin
     Menu(Center)
 end;
 
-procedure flamethrower(x, y, direction: integer);
-const
-    delayDuration = 100;
+procedure flamethrower(x, y, d: integer);
 begin
     paint(1, 2, 'Flamethrowing');
-    delay(delayDuration);
+
     paint(14, 2, '.');
-    delay(delayDuration);
+    paint_wave(x, y, d, 1);
+
     paint(15, 2, '.');
-    delay(delayDuration);
+    paint_wave(x, y, d, 2);
+
     paint(16, 2, '.');
-    delay(delayDuration);
+    paint_wave(x, y, d, 3);
+
     paint(1, 2, '                ');
+    TextColor(DefaultCol);
 end;
 
 procedure step(var key, direction, x, y: integer);
@@ -177,6 +178,7 @@ var
 begin
     ScreenCenter.x := ScreenWidth div 2;
     ScreenCenter.y := ScreenHeight div 2;
+    randomize;
     clrscr;
 
     Menu(ScreenCenter);

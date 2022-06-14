@@ -5,9 +5,10 @@ interface
 procedure paint(x, y: integer; data: string);
 procedure paint_image();
 procedure paint_dragon(x, y, direction: integer; hide: boolean = false);
+procedure paint_wave(x, y, d, wave: integer);
 
 implementation
-uses crt, constants, colorscheme;
+uses crt, constants, colorscheme, SysUtils;
 
 procedure paint(x, y: integer; data: string);
 begin
@@ -178,6 +179,86 @@ begin
     paint(x-s, y-1, paw);
     paint(x+(s*2), y+1, leg);
     paint(x+(s*2), y-1, leg);
+end;
+
+procedure paint_wave_Y(x, y, w: integer; hide: boolean = false); forward;
+procedure paint_wave_X(x, y, w: integer; hide: boolean = false); forward;
+procedure paint_wave(x, y, d, wave: integer);
+const
+    DelayDuration = 100;
+    FrontSizeY = 4;
+    FrontSizeX = 6;
+var
+    hide: boolean = true;
+begin
+    case d of
+        Up: begin
+            paint_wave_Y(x, y-FrontSizeY-wave, wave);
+            delay(DelayDuration);
+            paint_wave_Y(x, y-FrontSizeY-wave, wave, hide);
+        end;
+        Down: begin
+            paint_wave_Y(x, y+FrontSizeY+wave, wave);
+            delay(DelayDuration);
+            paint_wave_Y(x, y+FrontSizeY+wave, wave, hide);
+        end;
+        Right: begin
+            paint_wave_X(x+FrontSizeX+wave, y, wave);
+            delay(DelayDuration);
+            paint_wave_X(x+FrontSizeX+wave, y, wave, hide);
+        end;
+        Left: begin
+            paint_wave_X(x-FrontSizeX-wave, y, wave);
+            delay(DelayDuration);
+            paint_wave_X(x-FrontSizeX-wave, y, wave, hide);
+        end;
+    end
+end;
+
+procedure random_flame_col();
+begin
+    if random(2) = 1 then
+        TextColor(FlameCol1)
+    else
+        TextColor(FlameCol2)
+end;
+
+procedure paint_wave_Y(x, y, w: integer; hide: boolean = false);
+var
+    fl: char = '*';
+    i: integer;
+begin
+    if (y > 0) and (y < ScreenHeight) then begin
+        for i := -w to w do begin
+            if hide then begin
+                paint(x+i, y, ' ');
+                continue
+            end;
+            if random(2) = 1 then begin
+                random_flame_col();
+                paint(x+i, y, fl)
+            end;
+    end;
+    end
+end;
+
+procedure paint_wave_X(x, y, w: integer; hide: boolean = false);
+var
+    fl: char = '*';
+    i: integer;
+begin
+    if (x > 0) and (x < ScreenWidth) then begin
+        for i := -w to w do begin
+            if hide then begin
+                paint(x, y+i, ' ');
+                continue
+            end;
+            if random(2) = 1 then begin
+                random_flame_col();
+                paint(x, y+i, fl);
+            end;
+        end;
+    end
 end;
 
 { --- Bishop ---}
