@@ -94,31 +94,54 @@ begin
     end;
 end;
 
+function is_move(key: integer): boolean; forward;
+procedure spawn_bishops(); forward;
 procedure flamethrower(x, y, d: integer); forward;
 procedure step(var key, direction, x, y: integer); forward;
 procedure Play(Center: point);
 var
     Trash: point; { Dragon's location }
     key: integer;
-    direction: integer = Up;
+    direction: integer = Down;
 begin
     clrscr;
     paint(1, 1, 'Press Esc to die');
-    { Paint the dragon at center }
-    Trash := Center;
+    Trash.x := 3*(ScreenWidth div 8);
+    Trash.y := 3*(ScreenHeight div 8);
     paint_dragon(Trash.x, Trash.y, direction);
+    spawn_bishops();
     repeat
         GetKey(key);
-        paint_bishop(20, 10, Right);
-        paint_bishop(20, 20, Left);
         if key = Space then
             flamethrower(Trash.x, Trash.y, direction)
-        else if (key = Up) or (key = Down) or (key = Right) or (key = Left) then
+        else if is_move(key) then
             step(key, direction, Trash.x, Trash.y);
-        GotoXY(1, ScreenHeight);
     until (key = Esc);
     clrscr;
     Menu(Center)
+end;
+
+function is_move(key: integer): boolean;
+begin
+    is_move := (key = Up) or (key = Down) or (key = Left) or (key = Right);
+end;
+
+procedure spawn_bishops();
+var
+    x, y, kx, ky: integer;
+    dir: array[1..2] of integer = (Left, Right);
+    hide: boolean = true;
+begin
+    x := ScreenWidth div 4;
+    y := ScreenHeight div 4;
+    for ky := 1 to 3 do begin
+        for kx := 1 to 3 do begin
+            paint_bishop(kx*x, ky*y, Left, hide);
+            paint_bishop(kx*x, ky*y, Right, hide);
+            paint_bishop(kx*x, ky*y, dir[random(3)]);
+        end;
+    end;
+    GotoXY(1, ScreenHeight);
 end;
 
 procedure flamethrower(x, y, d: integer);
@@ -135,6 +158,7 @@ begin
     paint_wave(x, y, d, 3);
 
     paint(1, 2, '                ');
+    GotoXY(1, ScreenHeight);
     TextColor(DefaultCol);
 end;
 
@@ -159,7 +183,6 @@ begin
                 x := x - 2;
     end;
     paint_dragon(x, y, direction);
-    GotoXY(3, ScreenHeight); write(x); write(', '); write(y); write(' ');
 end;
 
 procedure Info(Center: point);
