@@ -188,9 +188,22 @@ end;
 procedure Info(Center: point);
 var
     key: integer;
+    dragon_txt, bishop_txt, msg: string;
 begin
+    dragon_txt := 'This is Trash, a dragon.'#10 +
+    'He knows how to fire-breathe.'#10;
+    bishop_txt := 'This is one of the nine bishops.'#10 +
+    'These are their names:'#10'Andre, Nico, Keons,'#10'Savarver, ' +
+    'Lisden, Reisdro,'#10'Nills, Vetomo, Listo.'#10 +
+    'They wear a red cloak with a hood.'#10'And carry knifes.'#10;
+    msg := 'You are flamethrower, they''re - switchblades.'#10;
+
     clrscr;
-    write('Iriska');
+    paint(0, 1, dragon_txt);
+    paint_dragon(15, WhereY+6, Down);
+    paint(0, 15, bishop_txt);
+    paint_bishop(16, WhereY+3, Left);
+    paint(1, 29, msg);
     repeat
         GetKey(key);
     until ((key = Esc) or (key = Enter));
