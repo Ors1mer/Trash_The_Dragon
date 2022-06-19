@@ -1,4 +1,4 @@
-program Trash_Game; {game.pas}
+program Trash_Game; { game.pas }
 uses crt, constants, colorscheme, painter;
 
 type
@@ -24,12 +24,13 @@ begin
     end
 end;
 
+{ --- MENU --- }
+
 procedure Play(Center: point); forward;
 procedure Info(Center: point); forward;
 procedure paint_buttons(sel_b, pl_b, in_b, ex_b: button); forward;
 procedure move_menu_cursor(key: integer; var sel_b, pl_b, in_b, ex_b: button);
 forward;
-
 procedure Menu(Center: point);
 var
     key: integer;
@@ -94,26 +95,42 @@ begin
     end;
 end;
 
+{ --- PLAY --- }
+
+const
+    BiAmount = 9;
+type
+    Bishop = record
+        state: integer; { <1 - dead, 1 - alive }
+        dir: integer;
+        x: integer;
+        y: integer;
+    end;
+    Bishops = array[1..BiAmount] of Bishop;
+
 function is_move(key: integer): boolean; forward;
-procedure spawn_bishops(); forward;
-procedure flamethrower(x, y, d: integer); forward;
+procedure spawn_bishops(var Niners: Bishops); forward;
 procedure step(var key, direction, x, y: integer); forward;
+procedure flamethrower(x, y, d: integer; var Niners: Bishops); forward;
 procedure Play(Center: point);
 var
     Trash: point; { Dragon's location }
-    key: integer;
     direction: integer = Down;
+    Niners: Bishops;
+    key: integer;
 begin
     clrscr;
     paint(1, 1, 'Press Esc to die');
+    Niners[1].x := -1;
     Trash.x := 3*(ScreenWidth div 8);
     Trash.y := 3*(ScreenHeight div 8);
     paint_dragon(Trash.x, Trash.y, direction);
-    spawn_bishops();
+    spawn_bishops(Niners);
     repeat
         GetKey(key);
+        spawn_bishops(Niners);
         if key = Space then
-            flamethrower(Trash.x, Trash.y, direction)
+            flamethrower(Trash.x, Trash.y, direction, Niners)
         else if is_move(key) then
             step(key, direction, Trash.x, Trash.y);
     until (key = Esc);
@@ -123,40 +140,98 @@ end;
 
 function is_move(key: integer): boolean;
 begin
-    is_move := (key = Up) or (key = Down) or (key = Left) or (key = Right);
+    is_move := (key=Up) or (key=Down) or (key=Left) or (key=Right);
 end;
 
-procedure spawn_bishops();
+procedure get_default_bishops(var Niners: Bishops); forward;
+procedure spawn_bishops(var Niners: Bishops);
 var
-    x, y, kx, ky: integer;
+    n: integer;
     dir: array[1..2] of integer = (Left, Right);
     hide: boolean = true;
+    alive: integer = 1;
+begin
+    if Niners[1].x = -1 then {bishops weren't printed yet}
+        get_default_bishops(Niners);
+
+    for n := 1 to BiAmount do begin
+        if Niners[n].state = alive then begin
+            paint_bishop(Niners[n].x, Niners[n].y, Niners[n].dir, hide);
+            Niners[n].dir := dir[random(3)];
+            paint_bishop(Niners[n].x, Niners[n].y, Niners[n].dir);
+        end;
+    end;
+    GotoXY(1, ScreenHeight)
+end;
+
+procedure get_default_bishops(var Niners: Bishops);
+var
+    n, x, y, kx, ky: integer;
+    alive: integer = 1;
 begin
     x := ScreenWidth div 4;
     y := ScreenHeight div 4;
+    n := 1; {bishop's number}
     for ky := 1 to 3 do begin
         for kx := 1 to 3 do begin
-            paint_bishop(kx*x, ky*y, Left, hide);
-            paint_bishop(kx*x, ky*y, Right, hide);
-            paint_bishop(kx*x, ky*y, dir[random(3)]);
+            Niners[n].x := kx*x;
+            Niners[n].y := ky*y;
+            Niners[n].state := alive;
+            n := n + 1;
         end;
     end;
-    GotoXY(1, ScreenHeight);
 end;
 
-procedure flamethrower(x, y, d: integer);
+procedure aim_bi_origin(a, a1, b, b1, w: integer; var Bi: Bishop); forward;
+procedure hit_bishop(x, y, d, wave: integer; var Nrs: Bishops);
+var
+    DrFrontSizeY: integer = 4;
+    DrFrontSizeX: integer = 6;
+    n: integer;
+begin
+    case d of
+        Up:    y := y - wave - DrFrontSizeY;
+        Down:  y := y + wave + DrFrontSizeY;
+        Left:  x := x - wave - DrFrontSizeX;
+        Right: x := x + wave + DrFrontSizeX;
+    end;
+    for n := 1 to BiAmount do begin
+        case d of
+            Up, Down:
+                aim_bi_origin(x, Nrs[n].x, y, Nrs[n].y, wave, Nrs[n]);
+            Left, Right:
+                aim_bi_origin(y, Nrs[n].y, x, Nrs[n].x, wave, Nrs[n]);
+        end;
+    end;
+end;
+
+procedure aim_bi_origin(a, a1, b, b1, w: integer; var Bi: Bishop);
+var
+    i: integer;
+    hide: boolean = true;
+begin
+    if b = b1 then begin
+        for i := a-w to a+w do begin
+            if i = a1 then begin
+                Bi.state := Bi.state - 1;
+                paint_bishop(Bi.x, Bi.y, Bi.dir, hide);
+                break;
+            end;
+        end;
+    end;
+end;
+
+procedure flamethrower(x, y, d: integer; var Niners: Bishops);
+var
+    SentenceLen: integer = 13;
+    w: integer;
 begin
     paint(1, 2, 'Flamethrowing');
-
-    paint(14, 2, '.');
-    paint_wave(x, y, d, 1);
-
-    paint(15, 2, '.');
-    paint_wave(x, y, d, 2);
-
-    paint(16, 2, '.');
-    paint_wave(x, y, d, 3);
-
+    for w := 1 to 3 do begin
+        paint(SentenceLen+w, 2, '.');
+        paint_wave(x, y, d, w);
+        hit_bishop(x, y, d, w, Niners);
+    end;
     paint(1, 2, '                ');
     GotoXY(1, ScreenHeight);
     TextColor(DefaultCol);
@@ -184,6 +259,8 @@ begin
     end;
     paint_dragon(x, y, direction);
 end;
+
+{ --- INFO --- }
 
 procedure Info(Center: point);
 var

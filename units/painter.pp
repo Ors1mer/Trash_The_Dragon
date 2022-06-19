@@ -262,7 +262,7 @@ begin
     end
 end;
 
-{ --- Bishop ---}
+{ --- Bishop --- }
 type
     BishopParts = array[1..9] of char;
 
