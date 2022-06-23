@@ -4,11 +4,11 @@ uses crt, constants, colorscheme, painter;
 type
     point = record
         x: integer;
-        y: integer;
+        y: integer
     end;
     button = record
         name: string;
-        loc: integer;
+        loc: integer
     end;
 
 procedure GetKey(var code: integer); { Keypress handler }
@@ -68,7 +68,7 @@ begin
     TextBackground(ButtonBg); TextColor(ButtonCol);
     write(sel_b.name);
     GotoXY(x_loc, WhereY);
-    TextBackground(DefaultBg); TextColor(DefaultCol);
+    TextBackground(DefaultBg); TextColor(DefaultCol)
 end;
 
 procedure move_menu_cursor(key: integer; var sel_b, pl_b, in_b, ex_b: button);
@@ -84,7 +84,7 @@ begin
                     sel_b := in_b
                 else
                     sel_b := pl_b;
-                GotoXY(WhereX, sel_b.loc);
+                GotoXY(WhereX, sel_b.loc)
             end;
         Down:
             if sel_b.loc < y_max then begin
@@ -92,9 +92,9 @@ begin
                     sel_b := in_b
                 else
                     sel_b := ex_b;
-                GotoXY(WhereX, sel_b.loc);
-            end;
-    end;
+                GotoXY(WhereX, sel_b.loc)
+            end
+    end
 end;
 
 { --- PLAY --- }
@@ -107,14 +107,13 @@ const
         'Andre', 'Nico', 'Nills'
     );
     aliveBi = 1;
-    resurrectBi = -64;
 type
     Bishop = record
         name: string;
         state: integer; { <1 - dead, 1 - aliveBi }
         dir: integer;
-        x: integer;
-        y: integer;
+        x, y: integer;
+        relx, rely: integer; { relative to (x,y) }
     end;
     Bishops = array[1..BiAmount] of Bishop;
 
@@ -155,12 +154,11 @@ end;
 
 procedure get_default_bishops(var Niners: Bishops); forward;
 procedure resurrection(var Bi: Bishop); forward;
+procedure bishop_step(var Bi: Bishop); forward;
 procedure spawn_bishops(var Niners: Bishops);
-const
-    dir: array[1..2] of integer = (Left, Right);
-    hide: boolean = true;
 var
     n: integer;
+    hide: boolean = true;
 begin
     if Niners[1].x = -1 then { bishops weren't printed yet }
         get_default_bishops(Niners);
@@ -169,9 +167,13 @@ begin
         resurrection(Niners[n]);
 
         if Niners[n].state = aliveBi then begin
-            paint_bishop(Niners[n].x, Niners[n].y, Niners[n].dir, hide);
-            Niners[n].dir := dir[random(3)];
-            paint_bishop(Niners[n].x, Niners[n].y, Niners[n].dir)
+            paint_bishop(Niners[n].x + Niners[n].relx,
+                         Niners[n].y + Niners[n].rely,
+                         Niners[n].dir, hide);
+            bishop_step(Niners[n]);
+            paint_bishop(Niners[n].x + Niners[n].relx,
+                         Niners[n].y + Niners[n].rely,
+                         Niners[n].dir)
         end else begin
             Niners[n].state := Niners[n].state - 1
         end
@@ -179,19 +181,6 @@ begin
     GotoXY(1, ScreenHeight)
 end;
 
-procedure resurrection(var Bi: Bishop);
-const
-    msg = ' resurrected!';
-begin
-    if Bi.state = resurrectBi then begin
-        Bi.State := aliveBi;
-        GotoXY(3, ScreenHeight);
-        clreol;
-        TextColor(BishopEyeCol);
-        write(Bi.name+msg);
-        TextColor(DefaultCol);
-    end
-end;
 
 procedure get_default_bishops(var Niners: Bishops);
 var
@@ -207,9 +196,11 @@ begin
             Niners[n].state := aliveBi;
             Niners[n].x := kx*x;
             Niners[n].y := ky*y;
-            n := n + 1;
-        end;
-    end;
+            Niners[n].relx := 0;
+            Niners[n].rely := 0;
+            n := n + 1
+        end
+    end
 end;
 
 procedure aim_bi_origin(a, a1, b, b1, w: integer; var Bi: Bishop); forward;
@@ -229,9 +220,11 @@ begin
     for n := 1 to BiAmount do begin
         case d of
             Up, Down:
-                aim_bi_origin(x, Nrs[n].x, y, Nrs[n].y, wave, Nrs[n]);
+                aim_bi_origin(x, Nrs[n].x+Nrs[n].relx,
+                              y, Nrs[n].y+Nrs[n].rely, wave, Nrs[n]);
             Left, Right:
-                aim_bi_origin(y, Nrs[n].y, x, Nrs[n].x, wave, Nrs[n])
+                aim_bi_origin(y, Nrs[n].y+Nrs[n].rely,
+                              x, Nrs[n].x+Nrs[n].relx, wave, Nrs[n])
         end
     end
 end;
@@ -249,7 +242,7 @@ begin
                 Bi.state := Bi.state - 1;
                 TextColor(KnifeCol1);
                 paint(3, ScreenHeight, Bi.name+msg);
-                paint_bishop(Bi.x, Bi.y, Bi.dir, hide);
+                paint_bishop(Bi.x+Bi.relx, Bi.y+Bi.rely, Bi.dir, hide);
                 break
             end
         end
@@ -270,7 +263,7 @@ begin
     end;
     paint(1, 2, '                ');
     GotoXY(1, ScreenHeight);
-    TextColor(DefaultCol);
+    TextColor(DefaultCol)
 end;
 
 procedure step(var key, direction, x, y: integer);
@@ -293,8 +286,85 @@ begin
             if x > 7 then
                 x := x - 2;
     end;
-    paint_dragon(x, y, direction);
+    paint_dragon(x, y, direction)
 end;
+
+procedure resurrection(var Bi: Bishop);
+const
+    msg = ' resurrected!';
+begin
+    if Bi.state = resurrectBi then begin
+        Bi.State := aliveBi;
+        GotoXY(3, ScreenHeight);
+        clreol;
+        TextColor(BishopEyeCol);
+        write(Bi.name+msg);
+        TextColor(DefaultCol)
+    end
+end;
+
+type
+    BiMovesArr = array[1..4] of integer;
+
+procedure allowed_moves(var n, rx, ry: integer; var moves: BiMovesArr);
+forward;
+procedure random_move(n: integer; moves: BiMovesArr; var Bi: Bishop); forward;
+procedure change_dir_Bi(var Bi: Bishop); forward;
+procedure bishop_step(var Bi: Bishop);
+var
+    moves: BiMovesArr;
+    n: integer = 1;
+begin
+    if random(11) < 3 then { 20% chance of changing direction }
+        change_dir_Bi(Bi);
+    if random(11) < 3 then begin { 20% chance of no move }
+        allowed_moves(n, Bi.relx, Bi.rely, moves);
+        random_move(n, moves, Bi);
+    end
+end;
+
+procedure allowed_moves(var n, rx, ry: integer; var moves: BiMovesArr);
+begin
+    if ry > -r then begin
+        moves[n] := Up;
+        n := n + 1
+    end;
+    if ry < r then begin
+        moves[n] := Down;
+        n := n + 1
+    end;
+    if rx > -r then begin
+        moves[n] := Left;
+        n := n + 1
+    end;
+    if rx < r then begin
+        moves[n] := Right;
+        n := n + 1
+    end
+end;
+
+procedure random_move(n: integer; moves: BiMovesArr; var Bi: Bishop);
+begin
+    case moves[random(n+1)] of
+        Up:
+            Bi.rely := Bi.rely - 1;
+        Down:
+            Bi.rely := Bi.rely + 1;
+        Left:
+            Bi.relx := Bi.relx - 1;
+        Right:
+            Bi.relx := Bi.relx + 1
+    end
+end;
+
+procedure change_dir_Bi(var Bi: Bishop);
+begin
+    if Bi.dir = Left then
+        Bi.dir := Right
+    else
+        Bi.dir := Left
+end;
+
 
 { --- INFO --- }
 
@@ -321,7 +391,7 @@ begin
         GetKey(key);
     until ((key = Esc) or (key = Enter));
     clrscr;
-    Menu(Center);
+    Menu(Center)
 end;
 
 var
@@ -332,5 +402,5 @@ begin
     randomize;
     clrscr;
 
-    Menu(ScreenCenter);
+    Menu(ScreenCenter)
 end.

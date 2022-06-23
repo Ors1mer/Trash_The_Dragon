@@ -30,7 +30,7 @@ begin
     assign(source, filepath);
     reset(source);
     TextBackground(TitleBg); TextColor(ButtonCol);
-    paint(75 div 2, 1, title);
+    paint((75 div 2), 1, title);
     TextBackground(DefaultBg); TextColor(ImageCol);
     for linenum := 2 to 31 do begin
         readln(source, linechars);

@@ -11,6 +11,9 @@ const
     Left = 97;
     Right = 100;
 
+    { Difficulty }
+    r = 3;   { Radius of the movement area of bishop }
+    resurrectBi = -32; { Respawn countdown of bishop }
 implementation
 
 begin end.
