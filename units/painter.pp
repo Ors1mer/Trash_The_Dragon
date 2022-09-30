@@ -21,7 +21,11 @@ end;
 procedure paint_image();
 const
     title = '<><><> Trash The Dragon <><><>';
+    {$IFDEF INSTALL}
+    filepath = '../../.config/ttd/dragon_pic.asc';
+    {$ELSE}
     filepath = 'data/dragon_pic.asc';
+    {$ENDIF}
 var
     linenum: integer;
     linechars: string;

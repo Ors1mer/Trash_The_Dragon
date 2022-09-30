@@ -14,16 +14,13 @@ it impossible (*by default you have* ***no chances***).\
 The difficulty can be changed by changing the *r* and 
 *ressurectBi* constants in file *units/constants.pp*.
 ## Usage
-Compile:
+**Install** in the system (*~/.config/bin* must be in *$PATH*) and launch:
 ```bash
-make
+make install && ttd
 ```
-
-Dependencies:
- - fpc v3.2.2 or later
-
-And launch:
+Or **compile** within repository:
 ```bash
-./game
+make && ./ttd_dev
 ```
-*Since this point bishops start to fear losing their control.*
+**Dependencies:**
+ - *fpc* v3.2.2 or later
