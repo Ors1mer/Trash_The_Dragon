@@ -14,10 +14,14 @@ it impossible (*by default you have* ***no chances***).\
 The difficulty can be changed by changing the *r* and 
 *ressurectBi* constants in file *units/constants.pp*.
 ## Usage
-Compile with one command (fpc must be installed, obviously):
+Compile:
 ```bash
-fpc game.pas -Fuunits
+make
 ```
+
+Dependencies:
+ - fpc v3.2.2 or later
+
 And launch:
 ```bash
 ./game
