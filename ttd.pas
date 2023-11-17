@@ -1,4 +1,4 @@
-program Trash_Game; { game.pas }
+program Trash_Game; { ttd.pas }
 uses crt, constants, colorscheme, painter;
 
 type
@@ -78,7 +78,7 @@ begin
     y_min := pl_b.loc;
     y_max := ex_b.loc;
     case key of
-        Up:
+        Up, ViUp:
             if sel_b.loc > y_min then begin
                 if sel_b.loc = ex_b.loc then
                     sel_b := in_b
@@ -86,7 +86,7 @@ begin
                     sel_b := pl_b;
                 GotoXY(WhereX, sel_b.loc)
             end;
-        Down:
+        Down, ViDown:
             if sel_b.loc < y_max then begin
                 if sel_b.loc = pl_b.loc then
                     sel_b := in_b
@@ -149,7 +149,8 @@ end;
 
 function is_move(key: integer): boolean;
 begin
-    is_move := (key=Up) or (key=Down) or (key=Left) or (key=Right)
+    is_move := (key=Up) or (key=Down) or (key=Left) or (key=Right) or
+               (key=ViUp) or (key=ViDown) or (key=ViLeft) or (key=ViRight)
 end;
 
 procedure get_default_bishops(var Niners: Bishops); forward;
@@ -212,17 +213,17 @@ var
     n: integer;
 begin
     case d of
-        Up:    y := y - wave - DrFrontSizeY;
-        Down:  y := y + wave + DrFrontSizeY;
-        Left:  x := x - wave - DrFrontSizeX;
-        Right: x := x + wave + DrFrontSizeX
+        Up, ViUp:       y := y - wave - DrFrontSizeY;
+        Down, ViDown:   y := y + wave + DrFrontSizeY;
+        Left, ViLeft:   x := x - wave - DrFrontSizeX;
+        Right, ViRight: x := x + wave + DrFrontSizeX
     end;
     for n := 1 to BiAmount do begin
         case d of
-            Up, Down:
+            Up, Down, ViUp, ViDown:
                 aim_bi_origin(x, Nrs[n].x+Nrs[n].relx,
                               y, Nrs[n].y+Nrs[n].rely, wave, Nrs[n]);
-            Left, Right:
+            Left, Right, ViLeft, ViRight:
                 aim_bi_origin(y, Nrs[n].y+Nrs[n].rely,
                               x, Nrs[n].x+Nrs[n].relx, wave, Nrs[n])
         end
@@ -273,16 +274,16 @@ begin
     paint_dragon(x, y, direction, hide);
     direction := key;
     case direction of
-        Up:
+        Up, ViUp:
             if y > 5 then
                 y := y - 1;
-        Down:
+        Down, ViDown:
             if y < ScreenHeight - 4 then
                 y := y + 1;
-        Right:
+        Right, ViRight:
             if x < ScreenWidth - 7 then
                 x := x + 2;
-        Left:
+        Left, ViLeft:
             if x > 7 then
                 x := x - 2;
     end;
