@@ -41,13 +41,13 @@ begin
     exit_b.name := '    *EXIT*   '; exit_b.loc := 35;
     selected_b := play_b;
     paint_image();
-    { Let user choose button }
+    { Let the player choose a button }
     repeat
         paint_buttons(selected_b, play_b, info_b, exit_b);
         GetKey(key);
         move_menu_cursor(key, selected_b, play_b, info_b, exit_b);
-    until ((key = Enter) or (key = Esc));
-    if key = Enter then begin
+    until ((key = Enter) or (key = E) or (key = Esc) or (key = Q));
+    if (key = Enter) or (key = E) then begin
         if selected_b.loc = play_b.loc then
             Play(Center)
         else if selected_b.loc = info_b.loc then

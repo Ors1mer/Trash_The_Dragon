@@ -4,7 +4,9 @@ interface
 const
     { Key codes }
     Enter = 13;
+    E = 101;
     Esc = 27;
+    Q = 113;
     Space = 32;
 
     Up = 119;
