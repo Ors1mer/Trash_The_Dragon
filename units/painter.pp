@@ -62,9 +62,9 @@ begin
             parts[i] := ' ';
     end;
     case direction of
-        Up, Down, ViUp, ViDown:
+        Up, Down, ViUp, ViDown, ArrUp, ArrDown:
             paint_Y(x, y, direction, parts);
-        Right, Left, ViRight, ViLeft:
+        Right, Left, ViRight, ViLeft, ArrRight, ArrLeft:
             paint_X(x, y, direction, parts);
     end;
     TextColor(DefaultCol);
@@ -79,7 +79,7 @@ var
     { Up & Down are symetric images, s defines the direction to paint }
     s: integer = 1; 
 begin
-    if (d = Down) or (d = ViDown) then
+    if (d = Down) or (d = ViDown) or (d = ArrDown) then
         s := -1;
     TextColor(EyeCol);
     paint(x-1, y-(s*3), parts[3]+' '+parts[3]);
@@ -133,7 +133,7 @@ var
     { Right & Left are symetric images, s defines the direction to paint }
     s: integer = 1; 
 begin
-    if (d = Left) or (d = ViLeft) then
+    if (d = Left) or (d = ViLeft) or (d = ArrLeft) then
         s := -1;
     TextColor(EyeCol);
     paint(x+(s*5), y+1, parts[3]);
@@ -197,22 +197,22 @@ var
     hide: boolean = true;
 begin
     case d of
-        Up, ViUp: begin
+        Up, ViUp, ArrUp: begin
             paint_wave_Y(x, y-FrontSizeY-wave, wave);
             delay(DelayDuration);
             paint_wave_Y(x, y-FrontSizeY-wave, wave, hide);
         end;
-        Down, ViDown: begin
+        Down, ViDown, ArrDown: begin
             paint_wave_Y(x, y+FrontSizeY+wave, wave);
             delay(DelayDuration);
             paint_wave_Y(x, y+FrontSizeY+wave, wave, hide);
         end;
-        Right, ViRight: begin
+        Right, ViRight, ArrRight: begin
             paint_wave_X(x+FrontSizeX+wave, y, wave);
             delay(DelayDuration);
             paint_wave_X(x+FrontSizeX+wave, y, wave, hide);
         end;
-        Left, ViLeft: begin
+        Left, ViLeft, ArrLeft: begin
             paint_wave_X(x-FrontSizeX-wave, y, wave);
             delay(DelayDuration);
             paint_wave_X(x-FrontSizeX-wave, y, wave, hide);

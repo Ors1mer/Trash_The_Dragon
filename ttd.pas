@@ -78,7 +78,7 @@ begin
     y_min := pl_b.loc;
     y_max := ex_b.loc;
     case key of
-        Up, ViUp:
+        Up, ViUp, ArrUp:
             if sel_b.loc > y_min then begin
                 if sel_b.loc = ex_b.loc then
                     sel_b := in_b
@@ -86,7 +86,7 @@ begin
                     sel_b := pl_b;
                 GotoXY(WhereX, sel_b.loc)
             end;
-        Down, ViDown:
+        Down, ViDown, ArrDown:
             if sel_b.loc < y_max then begin
                 if sel_b.loc = pl_b.loc then
                     sel_b := in_b
@@ -150,7 +150,8 @@ end;
 function is_move(key: integer): boolean;
 begin
     is_move := (key=Up) or (key=Down) or (key=Left) or (key=Right) or
-               (key=ViUp) or (key=ViDown) or (key=ViLeft) or (key=ViRight)
+               (key=ViUp) or (key=ViDown) or (key=ViLeft) or (key=ViRight) or
+               (key=ArrUp) or (key=ArrDown) or (key=ArrLeft) or (key=ArrRight)
 end;
 
 procedure get_default_bishops(var Niners: Bishops); forward;
@@ -213,17 +214,17 @@ var
     n: integer;
 begin
     case d of
-        Up, ViUp:       y := y - wave - DrFrontSizeY;
-        Down, ViDown:   y := y + wave + DrFrontSizeY;
-        Left, ViLeft:   x := x - wave - DrFrontSizeX;
-        Right, ViRight: x := x + wave + DrFrontSizeX
+        Up, ViUp, ArrUp:          y := y - wave - DrFrontSizeY;
+        Down, ViDown, ArrDown:    y := y + wave + DrFrontSizeY;
+        Left, ViLeft, ArrLeft:    x := x - wave - DrFrontSizeX;
+        Right, ViRight, ArrRight: x := x + wave + DrFrontSizeX
     end;
     for n := 1 to BiAmount do begin
         case d of
-            Up, Down, ViUp, ViDown:
+            Up, Down, ViUp, ViDown, ArrUp, ArrDown:
                 aim_bi_origin(x, Nrs[n].x+Nrs[n].relx,
                               y, Nrs[n].y+Nrs[n].rely, wave, Nrs[n]);
-            Left, Right, ViLeft, ViRight:
+            Left, Right, ViLeft, ViRight, ArrLeft, ArrRight:
                 aim_bi_origin(y, Nrs[n].y+Nrs[n].rely,
                               x, Nrs[n].x+Nrs[n].relx, wave, Nrs[n])
         end
@@ -274,16 +275,16 @@ begin
     paint_dragon(x, y, direction, hide);
     direction := key;
     case direction of
-        Up, ViUp:
+        Up, ViUp, ArrUp:
             if y > 5 then
                 y := y - 1;
-        Down, ViDown:
+        Down, ViDown, ArrDown:
             if y < ScreenHeight - 4 then
                 y := y + 1;
-        Right, ViRight:
+        Right, ViRight, ArrRight:
             if x < ScreenWidth - 7 then
                 x := x + 2;
-        Left, ViLeft:
+        Left, ViLeft, ArrLeft:
             if x > 7 then
                 x := x - 2;
     end;

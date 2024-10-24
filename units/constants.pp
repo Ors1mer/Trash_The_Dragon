@@ -17,6 +17,10 @@ const
     ViDown = 106;
     ViLeft = 104;
     ViRight = 108;
+    ArrUp = -72;
+    ArrDown = -80;
+    ArrLeft = -75;
+    ArrRight = -77;
 
     { Difficulty }
     r = 3;   { Radius of the movement area of bishop }
